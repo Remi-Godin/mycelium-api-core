@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package mycelium_scada.heartbeat.v1;
+
+message Heartbeat {
+
+  enum LivelinessStatus {
+    UNSPECIFIED = 0;
+    SERVICE_UP = 1;
+    SERVICE_DEGRADED = 2;
+    SERVICE_DOWN = 3;
+  }
+
+  // The name of the service publishing the heartbeat.
+  string service_name = 1;
+
+  // An overall status for the service.
+  LivelinessStatus status = 2;
+
+}
