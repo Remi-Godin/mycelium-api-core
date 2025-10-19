@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package mycelium_scada.data.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// A single data point from a source.
+message Measurement {
+  // The measurment source name. This may differ from the published named used
+  // on the messaging backend.
+  string source_name = 1;
+
+  // The timestamp of the measurement.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // The value of the measurement at the given timestamp.
+  oneof value {
+    bool bool_value = 3;
+    int64 int_value = 4;
+    double real_value = 5;
+    string string_value = 6;
+    bytes bytes_value = 7;
+  }
+}
