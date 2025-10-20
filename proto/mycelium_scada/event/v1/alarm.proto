@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package mycelium_scada.alarm.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum Severity {
+  SEVERITY_UNSPECIFIED = 0;
+  SEVERITY_DIAGNOSTICS = 1;
+  SEVERITY_INFO = 2;
+  SEVERITY_WARNING = 3;
+  SEVERITY_ALARM = 4;
+  SEVEIRTY_CRITICAL = 5;
+}
+
+message EventEnveloppe {
+
+  enum EventContext {
+    EVENT_CONTEXT_UNSPECIFIED = 0;
+    EVENT_CONTEXT_OPERATIONS = 1;
+    EVENT_CONTEXT_SERVICE = 2;
+  }
+
+  // The UUID of the event.
+  string event_id = 1;
+
+  // An optional ID used to group alarms that belong together.
+  opitonal string aggregate_id = 2;
+
+  // Timestamp of the event.
+  google.protobuf.Timestamp timestamp = 3;
+
+  // The context of the event.
+  string event_context = 4;
+
+  // The name of the source that triggered this event.
+  string event_source = 5;
+
+  // Payload for the event
+  oneof payload {
+    AlarmActivated alarm_activated = 6;
+    AlarmDeactivated alarm_deactivated = 7;
+    AlarmAcknowledged alarm_acknowledged = 8;
+    AlarmStatusLost alarm_status_lost = 9;
+    AlarmSuppressed alarm_suppressed = 10;
+    AlarmUnsuppressed alarm_unsuppressed = 11;
+    AlarmShelved alarm_shelved = 12;
+    AlarmUnshelved alarm_unshelved = 13;
+    AlarmCommentUpdated alarm_comment_updated = 14;
+    AlarmDisabled alarm_disabled = 15;
+    AlarmEnabled alarm_enabled = 16;
+    AlarmSeverityChanged alarm_severity_changed = 17;
+  }
+}
+
+message AlarmAcknowledged{}
+message AlarmActivated{}
+message AlarmDeactivated{}
+message AlarmStatusLost{}
+message AlarmSuppressed{}
+message AlarmUnsuppressed{}
+message AlarmShelved{}
+message AlarmUnshelved{}
+message AlarmCommentUpdated{}
+message AlarmDisabled{}
+message AlarmEnabled{}
+message AlarmSeverityChanged{}
