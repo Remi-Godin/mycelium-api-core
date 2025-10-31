@@ -6,19 +6,45 @@ import "google/protobuf/timestamp.proto";
 
 // A single data point from a source.
 message Measurement {
-  // The measurment source name. This may differ from the published named used
-  // on the messaging backend.
+  // The measurment source name as read from the target device.
+  // This may differ from the published named used on the messaging backend.
   string source_name = 1;
 
+  // The data type of the source. This is to ensure that the tag information
+  // can be used to send back data to the target device with the proper
+  string source_type = 2;
+
   // The timestamp of the measurement.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp timestamp = 3;
 
   // The value of the measurement at the given timestamp.
   oneof value {
-    bool bool_value = 3;
-    int64 int_value = 4;
-    double real_value = 5;
-    string string_value = 6;
-    bytes bytes_value = 7;
+    bool bool_value = 4;
+    sint32 sint32_value = 5;
+    sint64 sint64_value = 6;
+    uint32 uint32_value = 7;
+    uint32 uint64_value = 8;
+    double real_value = 9;
+    string string_value = 10;
+    bytes bytes_value = 11;
   }
+}
+
+enum PlcDataType {
+  TYPE_UNKNOWN = 0;
+  TYPE_BOOL = 1;
+  TYPE_SINT = 2;  // 8-bit signed
+  TYPE_INT = 3;   // 16-bit signed
+  TYPE_DINT = 4;  // 32-bit signed
+  TYPE_LINT = 5;  // 64-bit signed
+  TYPE_USINT = 6; // 8-bit unsigned (for BYTE)
+  TYPE_UINT = 7;  // 16-bit unsigned (for WORD)
+  TYPE_UDINT = 8; // 32-bit unsigned (for DWORD)
+  TYPE_ULINT = 9; // 64-bit unsigned (for LWORD)
+  TYPE_REAL = 10;  // 32-bit float
+  TYPE_LREAL = 11; // 64-bit float
+  TYPE_STRING = 12;
+  TYPE_TIME = 13; // 32-bit signed (ms) - special case of DINT
+  TYPE_LTIME = 14; // 64-bit signed (ns) - special case of LINT
+  TYPE_BYTES = 15;
 }
