@@ -1,50 +1,91 @@
 syntax = "proto3";
 
-package mycelium_scada.data.v1;
+package plcdata;
 
 import "google/protobuf/timestamp.proto";
 
-// A single data point from a source.
-message Measurement {
-  // The measurment source name as read from the target device.
-  // This may differ from the published named used on the messaging backend.
-  string source_name = 1;
-
-  // The data type of the source. This is to ensure that the tag information
-  // can be used to send back data to the target device with the proper
-  string source_type = 2;
-
-  // The timestamp of the measurement.
-  google.protobuf.Timestamp timestamp = 3;
-
-  // The value of the measurement at the given timestamp.
-  oneof value {
-    bool bool_value = 4;
-    sint32 sint32_value = 5;
-    sint64 sint64_value = 6;
-    uint32 uint32_value = 7;
-    uint32 uint64_value = 8;
-    double real_value = 9;
-    string string_value = 10;
-    bytes bytes_value = 11;
-  }
-}
-
+// PlcDataType enum defines the original source type from the PLC.
 enum PlcDataType {
   TYPE_UNKNOWN = 0;
-  TYPE_BOOL = 1;
-  TYPE_SINT = 2;  // 8-bit signed
-  TYPE_INT = 3;   // 16-bit signed
-  TYPE_DINT = 4;  // 32-bit signed
-  TYPE_LINT = 5;  // 64-bit signed
-  TYPE_USINT = 6; // 8-bit unsigned (for BYTE)
-  TYPE_UINT = 7;  // 16-bit unsigned (for WORD)
-  TYPE_UDINT = 8; // 32-bit unsigned (for DWORD)
-  TYPE_ULINT = 9; // 64-bit unsigned (for LWORD)
-  TYPE_REAL = 10;  // 32-bit float
-  TYPE_LREAL = 11; // 64-bit float
-  TYPE_STRING = 12;
-  TYPE_TIME = 13; // 32-bit signed (ms) - special case of DINT
-  TYPE_LTIME = 14; // 64-bit signed (ns) - special case of LINT
-  TYPE_BYTES = 15;
+  TYPE_BOOL = 1;    // Mapped to bool
+  TYPE_STRING = 2;  // Mapped to string
+  TYPE_WORD = 3;    // Mapped to uint32
+  TYPE_DWORD = 4;   // Mapped to uint32
+  TYPE_LWORD = 5;   // Mapped to uint64
+  TYPE_SINT = 6;    // Mapped to sint32
+  TYPE_INT = 7;     // Mapped to sint32
+  TYPE_DINT = 8;    // Mapped to sint32
+  TYPE_LINT = 9;    // Mapped to sint64
+  TYPE_USINT = 10;  // Mapped to uint32
+  TYPE_UINT = 11;   // Mapped to uint32
+  TYPE_UDINT = 12;  // Mapped to uint32
+  TYPE_ULINT = 13;  // Mapped to uint64
+  TYPE_REAL = 14;   // Mapped to float
+  TYPE_LREAL = 15;  // Mapped to double
+  TYPE_BYTE = 16;   // Mapped to uint32
+}
+
+// Wrapper messages for arrays of values
+message BoolArray {
+  repeated bool values = 1;
+}
+message StringArray {
+  repeated string values = 1;
+}
+message S32Array {
+  repeated sint32 values = 1;
+}
+message U32Array {
+  repeated uint32 values = 1;
+}
+message S64Array {
+  repeated sint64 values = 1;
+}
+message U64Array {
+  repeated uint64 values = 1;
+}
+message FloatArray {
+  repeated float values = 1;
+}
+message DoubleArray {
+  repeated double values = 1;
+}
+
+
+// Message to send a SINGLE instance of any of the PLC data types.
+message PlcValue {
+  PlcDataType data_type = 1;
+  oneof value {
+    bool bool_value = 2;
+    string string_value = 3;
+    sint32 s32_value = 4;
+    uint32 u32_value = 5;
+    sint64 s64_value = 6;
+    uint64 u64_value = 7;
+    float float_value = 8;
+    double double_value = 9;
+  }
+  TagMetadata tag_metadata = 10;
+}
+
+message PlcValueArray {
+  PlcDataType data_type = 1;
+  oneof value {
+    BoolArray bool_value = 2;
+    StringArray string_value = 3;
+    S32Array s32_value = 4;
+    U32Array u32_value = 5;
+    S64Array s64_value = 6;
+    U64Array u64_value = 7;
+    FloatArray float_value = 8;
+    DoubleArray double_value = 9;
+    bytes bytes_value = 10;
+  }
+  TagMetadata tag_metadata = 11;
+}
+
+message TagMetadata {
+  string source_plc_name = 1;
+  string source_tag_name = 2;
+  google.protobuf.Timestamp timestamp = 3;
 }
